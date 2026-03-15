@@ -1,13 +1,22 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { useDispatch } from "react-redux";
+import toast from "react-hot-toast";
+import { addUser } from "../features/user/userSlice";
+import axios from "axios";
 
 const Signup = () => {
     const [step, setStep] = useState(1);
+    const [showPassword, setShowPassword] = React.useState(false);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const [error, setError] = useState("");
 
     const [formData, setFormData] = useState({
         firstName: "",
         lastName: "",
-        email: "",
+        emailId: "",
         password: "",
         skills: "",
         about: "",
@@ -19,19 +28,19 @@ const Signup = () => {
     const isStepOneValid =
         formData.firstName &&
         formData.lastName &&
-        formData.email &&
+        formData.emailId &&
         formData.password;
 
     const handleChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value,
-        });
+        const { name, value, files } = e.target;
+        if (name === "photo") {
+            setFormData({ ...formData, photo: files[0] });
+        } else {
+            setFormData({ ...formData, [name]: value });
+        }
     };
 
     const signupUrl = import.meta.env.VITE_API_BASE_URL + "/signup";
-
-    const navigate = useNavigate();
 
     const handleSubmit = async () => {
         try {
@@ -43,20 +52,30 @@ const Signup = () => {
                 }
             });
 
-            const response = await fetch(signupUrl, {
-                method: "POST",
-                body: payload, // NO headers here
+            const response = await axios.post(signupUrl, payload, {
+                withCredentials: true,
             });
 
-            if (response.ok) {
-                const data = await response.json();
+            console.log("Signup response:", response);
+
+            if (response.status === 201) {
+                const data = response?.data;
                 console.log("Signup successful:", data);
-                navigate("/");
+                dispatch(addUser(data?.data));
+                navigate("/feed");
+                toast.success("Signup successful!");
             } else {
-                console.error("Signup failed");
+                const errorData = await response.json();
+                const errorMessage = errorData?.message || "Signup failed.";
+                setError(errorMessage);
+                console.log("Signup error:", errorMessage);
+                toast.error(errorMessage);
             }
         } catch (error) {
-            console.error("Error during signup:", error);
+            const errorMessage = error.response?.data || "Something Went Wrong.";
+            setError(errorMessage);
+            console.log("Signup error:", errorMessage);
+            toast.error(errorMessage);
         }
     };
 
@@ -108,22 +127,32 @@ const Signup = () => {
                         </div>
 
                         <input
-                            name="email"
+                            name="emailId"
                             type="email"
                             placeholder="Email address *"
-                            value={formData.email}
+                            value={formData.emailId}
                             onChange={handleChange}
                             className="w-full px-4 py-3 rounded-lg bg-gray-800 text-white border border-gray-700 focus:border-indigo-500 outline-none"
                         />
 
-                        <input
-                            name="password"
-                            type="password"
-                            placeholder="Password *"
-                            value={formData.password}
-                            onChange={handleChange}
-                            className="w-full px-4 py-3 rounded-lg bg-gray-800 text-white border border-gray-700 focus:border-indigo-500 outline-none"
-                        />
+                        <div className="relative">
+                            <input
+                                name="password"
+                                type={showPassword ? "text" : "password"}
+                                placeholder="Password *"
+                                value={formData.password}
+                                onChange={handleChange}
+                                className="w-full px-4 py-3 rounded-lg bg-gray-800 text-white border border-gray-700 focus:border-indigo-500 outline-none"
+                            />
+
+                            {/* Eye Icon */}
+                            <span
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-4 top-4 text-gray-400 cursor-pointer hover:text-white"
+                            >
+                                {showPassword ? <FaEyeSlash /> : <FaEye />}
+                            </span>
+                        </div>
 
                         <button
                             disabled={!isStepOneValid}
@@ -131,7 +160,7 @@ const Signup = () => {
                             className={`w-full py-3 rounded-lg font-semibold transition
                 ${
                     isStepOneValid
-                        ? "bg-indigo-600 hover:bg-indigo-700"
+                        ? "bg-indigo-600 hover:bg-indigo-700 cursor-pointer"
                         : "bg-gray-700 text-gray-400 cursor-not-allowed"
                 }
               `}
@@ -202,12 +231,8 @@ const Signup = () => {
                             <input
                                 type="file"
                                 accept="image/*"
-                                onChange={(e) =>
-                                    setFormData({
-                                        ...formData,
-                                        photo: e.target.files[0],
-                                    })
-                                }
+                                name="photo"
+                                onChange={handleChange}
                                 className="block w-full text-sm text-gray-400
           file:mr-4 file:py-2 file:px-4
           file:rounded-lg file:border-0
@@ -228,7 +253,7 @@ const Signup = () => {
 
                             <button
                                 onClick={handleSubmit}
-                                className="w-full py-3 rounded-lg bg-indigo-600 hover:bg-indigo-700 font-semibold transition"
+                                className="w-full py-3 rounded-lg bg-indigo-600 hover:bg-indigo-700 font-semibold transition cursor-pointer"
                             >
                                 Finish
                             </button>

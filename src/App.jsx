@@ -7,6 +7,8 @@ import { Provider } from "react-redux";
 import store from "./utils/store";
 import { Toaster } from "react-hot-toast";
 import Profile from "./pages/Profile";
+import EditProfile from "./pages/EditProfile";
+import Feed from "./pages/Feed";
 
 function App() {
     return (
@@ -20,6 +22,8 @@ function App() {
                             <Route path="login" element={<Login />} />
                             <Route path="signup" element={<Signup />} />
                             <Route path="profile" element={<Profile />} />
+                            <Route path="edit-profile" element={<EditProfile />} />
+                            <Route path="feed" element={<Feed />} />
                             <Route path="*" element={<div className="text-center py-10">404 Not Found</div>} />
                         </Route>
                     </Routes>

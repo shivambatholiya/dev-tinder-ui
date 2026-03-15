@@ -3,37 +3,43 @@ import React from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { addUser } from "../features/user/userSlice";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const Login = () => {
+    const [showPassword, setShowPassword] = React.useState(false);
     const [loginData, setLoginData] = React.useState({
         emailId: "",
         password: "",
     });
+    const [error, setError] = React.useState("");
     const navigate = useNavigate();
     const dispatch = useDispatch();
-   
+
     const handleLogin = async (e) => {
         try {
             e.preventDefault();
 
             const loginUrl = import.meta.env.VITE_API_BASE_URL + "/login";
 
-            const response = await axios.post(loginUrl, loginData, { withCredentials: true });
+            const response = await axios.post(loginUrl, loginData, {
+                withCredentials: true,
+            });
 
             if (response.status === 200) {
-                const data = response.data;
+                const data = response?.data;
                 console.log("Login successful:", data);
 
                 // Dispatch action to update user state in Redux store
-                dispatch(addUser(data.data));
+                dispatch(addUser(data?.data));
 
-                navigate("/");
+                navigate("/feed");
             } else {
                 console.error("Login failed:", response.statusText);
             }
-            
         } catch (error) {
-            console.error("Login error:", error);
+            const errorMessage = error.response?.data || "Something Went Wrong.";
+            setError(errorMessage);
+            console.log("Login error:", errorMessage);
         }
     };
     return (
@@ -52,7 +58,10 @@ const Login = () => {
                     </div>
 
                     {/* Form */}
-                    <form className="space-y-5" onSubmit={(e) => handleLogin(e)}>
+                    <form
+                        className="space-y-5"
+                        onSubmit={(e) => handleLogin(e)}
+                    >
                         {/* Email */}
                         <div>
                             <label className="block text-sm text-gray-400 mb-1">
@@ -63,32 +72,51 @@ const Login = () => {
                                 placeholder="you@developer.com"
                                 value={loginData.emailId}
                                 onChange={(e) =>
-                                    setLoginData({ ...loginData, emailId: e.target.value })
+                                    setLoginData({
+                                        ...loginData,
+                                        emailId: e.target.value,
+                                    })
                                 }
                                 className="w-full px-4 py-3 rounded-lg bg-gray-800 text-white border border-gray-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30 outline-none transition"
                             />
                         </div>
 
                         {/* Password */}
-                        <div>
+                        <div className="relative">
                             <label className="block text-sm text-gray-400 mb-1">
                                 Password
                             </label>
+
                             <input
-                                type="password"
+                                type={showPassword ? "text" : "password"}
                                 placeholder="••••••••"
                                 value={loginData.password}
                                 onChange={(e) =>
-                                    setLoginData({ ...loginData, password: e.target.value })
+                                    setLoginData({
+                                        ...loginData,
+                                        password: e.target.value,
+                                    })
                                 }
-                                className="w-full px-4 py-3 rounded-lg bg-gray-800 text-white border border-gray-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30 outline-none transition"
+                                className="w-full px-4 py-3 pr-12 rounded-lg bg-gray-800 text-white border border-gray-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30 outline-none transition"
                             />
+
+                            {/* Eye Icon */}
+                            <span
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-4 top-10 text-gray-400 cursor-pointer hover:text-white"
+                            >
+                                {showPassword ? <FaEyeSlash /> : <FaEye />}
+                            </span>
                         </div>
+
+                        {error && (
+                            <div className="text-red-500 text-sm">{error}</div>
+                        )}
 
                         {/* Login Button */}
                         <button
                             type="submit"
-                            className="w-full py-3 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold transition shadow-lg shadow-indigo-600/20"
+                            className="w-full py-3 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold transition shadow-lg shadow-indigo-600/20 cursor-pointer"
                         >
                             Login
                         </button>

@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import Footer from "../components/Footer";
 
 const Home = () => {
@@ -17,9 +18,9 @@ const Home = () => {
         </p>
 
         <div className="mt-8 flex gap-4">
-          <button className="px-6 py-3 rounded-lg bg-indigo-600 hover:bg-indigo-700 font-semibold transition">
+          <Link to={"/feed"} className="px-6 py-3 rounded-lg bg-indigo-600 hover:bg-indigo-700 font-semibold transition">
             Get Started
-          </button>
+          </Link>
           <button className="px-6 py-3 rounded-lg border border-gray-700 hover:bg-gray-800 transition">
             Sign In
           </button>

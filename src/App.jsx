@@ -9,6 +9,8 @@ import { Toaster } from "react-hot-toast";
 import Profile from "./pages/Profile";
 import EditProfile from "./pages/EditProfile";
 import Feed from "./pages/Feed";
+import Connections from "./components/Connections";
+import Requests from "./components/Requests";
 
 function App() {
     return (
@@ -24,6 +26,8 @@ function App() {
                             <Route path="profile" element={<Profile />} />
                             <Route path="edit-profile" element={<EditProfile />} />
                             <Route path="feed" element={<Feed />} />
+                            <Route path="connections" element={<Connections />} />
+                            <Route path="requests" element={<Requests />} />
                             <Route path="*" element={<div className="text-center py-10">404 Not Found</div>} />
                         </Route>
                     </Routes>

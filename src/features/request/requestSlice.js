@@ -7,7 +7,7 @@ const requestSlice = createSlice({
         addRequests: (state, action) => {
             return action.payload;
         },
-        removeRequests: () => null,
+        removeRequests: () => [],
     }
 });
 

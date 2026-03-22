@@ -4,6 +4,10 @@ import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { removeUser } from "../features/user/userSlice";
+import { removeFeed } from "../features/feed/feedSlice";
+import { removeRequests } from "../features/request/requestSlice";
+import { removeSentRequests } from "../features/request/sentRequestSlice";
+import { removeConnections } from "../features/connection/connectionSlice";
 
 const Navbar = () => {
     const user = useSelector((store) => store.user);
@@ -25,6 +29,11 @@ const Navbar = () => {
                 toast.success("Logged out successfully!");
                 // Optionally, you can dispatch an action to clear user data from the Redux store here
                 dispatch(removeUser());
+                dispatch(removeFeed());
+                dispatch(removeRequests());
+                dispatch(removeSentRequests());
+                dispatch(removeConnections());
+
                 navigate("/");
             } else {
                 console.error("Logout failed:", res.statusText);
@@ -73,7 +82,7 @@ const Navbar = () => {
                             </div>
 
                             {/* Dropdown */}
-                            <div className="absolute right-0 mt-3 w-48 bg-gray-900 border border-gray-800 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+                            <div className="absolute right-0 mt-3 w-48 bg-gray-900 border border-gray-800 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
                                 <ul className="py-2 text-sm text-gray-300">
                                     <li>
                                         <Link
@@ -89,7 +98,7 @@ const Navbar = () => {
                                             to="/connections"
                                             className="block px-4 py-2 hover:bg-gray-800 cursor-pointer"
                                         >
-                                            Connections
+                                            My Connections
                                         </Link>
                                     </li>
 
@@ -98,7 +107,16 @@ const Navbar = () => {
                                             to="/requests"
                                             className="block px-4 py-2 hover:bg-gray-800 cursor-pointer"
                                         >
-                                            Requests
+                                            Received Requests
+                                        </Link>
+                                    </li>
+
+                                    <li>
+                                        <Link
+                                            to="/sent-requests"
+                                            className="block px-4 py-2 hover:bg-gray-800 cursor-pointer"
+                                        >
+                                            Sent Requests
                                         </Link>
                                     </li>
 

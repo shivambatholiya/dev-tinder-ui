@@ -22,7 +22,7 @@ const Home = () => {
             Get Started
           </Link>
           <button className="px-6 py-3 rounded-lg border border-gray-700 hover:bg-gray-800 transition">
-            Sign In
+            <Link to={"/login"}>Sign In</Link>
           </button>
         </div>
       </section>
